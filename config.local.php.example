@@ -1,0 +1,25 @@
+<?php
+/**
+ * Copia este archivo a "config.local.php" (sin ".example") -- o, mejor,
+ * ejecuta "php set_admin_password.php" en la terminal, que lo crea solo
+ * con estos mismos valores por defecto (pensados para MySQL de Laragon).
+ *
+ * Este archivo NUNCA se debe compartir ni subir a control de versiones:
+ * ahí viven las credenciales de la base de datos y el hash de la
+ * contraseña del panel de administrador.
+ */
+
+// Credenciales de MySQL. Los valores de abajo son los que trae Laragon
+// por defecto -- normalmente no hay que tocarlos.
+$DB_HOST = 'localhost';
+$DB_PORT = '3306';
+$DB_NAME = 'inventario_desur';
+$DB_USER = 'root';
+$DB_PASS = '';
+
+$ADMIN_PASSWORD_HASH = ''; // se llena solo con set_admin_password.php
+
+// URL del webhook entrante de Microsoft Teams para avisar de nuevas
+// solicitudes. Déjalo vacío si todavía no lo configuras: el sistema sigue
+// guardando las solicitudes con normalidad, solo no manda el aviso.
+$TEAMS_WEBHOOK_URL = '';
