@@ -6,9 +6,37 @@ $materiales = $pdo->query(
     "SELECT * FROM materiales WHERE categoria = 'oficina' ORDER BY nombre"
 )->fetchAll();
 
+$trabajadores = $pdo->query(
+  "SELECT id, nombre, area FROM trabajadores
+  WHERE  status = 'Activo' AND nombre <> 'VACANTE'
+  ORDER BY nombre"
+)->fetchAll();
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nombre = trim($_POST['nombre'] ?? '');
-    $area = trim($_POST['area'] ?? '');
+    $trabajadorId = (int)($_POST['trabajador_id'] ?? 0);
+
+    $nombre = '';
+    $area = '';
+
+    if ($trabajadorId > 0) {
+
+        $stmtTrabajador = $pdo->prepare(
+            "SELECT nombre, area
+             FROM trabajadores
+             WHERE id = ?
+             AND status = 'Activo'
+             LIMIT 1"
+        );
+
+        $stmtTrabajador->execute([$trabajadorId]);
+
+        $trabajador = $stmtTrabajador->fetch();
+
+        if ($trabajador) {
+            $nombre = $trabajador['nombre'];
+            $area = $trabajador['area'];
+        }
+    }
     $urgenciaPost = $_POST['urgencia'] ?? 'normal';
     $urgencia = in_array($urgenciaPost, ['normal', 'urgente'], true) ? $urgenciaPost : 'normal';
     $nota = trim($_POST['nota'] ?? '');
@@ -25,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if ($nombre === '') {
-        flash_set('error', 'Escribe tu nombre para enviar la solicitud.');
+        flash_set('error', 'Selecciona un trabajador vigente para enviar la solicitud.');
     } elseif ($area === '') {
         flash_set('error', 'Selecciona tu área.');
     } elseif (!$seleccion) {
@@ -110,22 +138,50 @@ require __DIR__ . '/includes/header.php';
 
     <form method="post" action="solicitar.php" id="form-solicitud">
       <div class="field">
-        <label for="nombre">Nombre de quien solicita</label>
-        <input type="text" id="nombre" name="nombre" value="<?= e($ultimoNombre) ?>" placeholder="Ej. María Torres" required>
-      </div>
+    <label for="trabajador-buscar">
+        Nombre de quien solicita
+    </label>
 
-      <div class="field">
-        <label for="area">Área / departamento</label>
-        <select id="area" name="area" required>
-          <option value="" disabled selected>Selecciona...</option>
-          <option>Recepción</option>
-          <option>Contabilidad</option>
-          <option>Recursos Humanos</option>
-          <option>Ventas</option>
-          <option>Sistemas</option>
-          <option>Dirección</option>
-        </select>
-      </div>
+    <div class="material-picker">
+
+        <input
+            type="text"
+            id="trabajador-buscar"
+            placeholder="Escribe tu nombre..."
+            autocomplete="off"
+            required
+        >
+
+        <div
+            class="material-opciones"
+            id="trabajador-opciones"
+            hidden
+        ></div>
+
+    </div>
+
+    <input
+        type="hidden"
+        id="trabajador_id"
+        name="trabajador_id"
+    >
+</div>
+
+    <div class="field">
+
+        <label for="area">
+            Área / departamento
+        </label>
+
+        <input
+            type="text"
+            id="area"
+            value=""
+            placeholder="Se llenará automáticamente"
+            readonly
+        >
+
+    </div>
 
       <div class="field">
         <label for="material-buscar">Materiales</label>
@@ -189,6 +245,161 @@ require __DIR__ . '/includes/header.php';
 
 <script>
   var MATERIALES = <?= json_encode($materialesJson, JSON_UNESCAPED_UNICODE) ?>;
+  var TRABAJADORES = <?= json_encode($trabajadores, JSON_UNESCAPED_UNICODE) ?>;
+
+  (function () {
+
+    var buscarTrabajador = document.getElementById(
+        'trabajador-buscar'
+    );
+
+    var opcionesTrabajador = document.getElementById(
+        'trabajador-opciones'
+    );
+
+    var trabajadorId = document.getElementById(
+        'trabajador_id'
+    );
+
+    var area = document.getElementById(
+        'area'
+    );
+
+
+    function buscarTrabajadores(consulta) {
+
+        consulta = consulta.trim().toLowerCase();
+
+        opcionesTrabajador.innerHTML = '';
+
+        if (consulta === '') {
+            opcionesTrabajador.hidden = true;
+            return;
+        }
+
+
+        var coincidencias = TRABAJADORES.filter(function (trabajador) {
+
+            return trabajador.nombre
+                .toLowerCase()
+                .indexOf(consulta) !== -1;
+
+        }).slice(0, 8);
+
+
+        if (coincidencias.length === 0) {
+
+            opcionesTrabajador.innerHTML =
+                '<div class="material-opcion material-opcion-vacio">' +
+                'No se encontró ningún trabajador vigente' +
+                '</div>';
+
+            opcionesTrabajador.hidden = false;
+
+            return;
+        }
+
+
+        coincidencias.forEach(function (trabajador) {
+
+            var opcion = document.createElement('div');
+
+            opcion.className = 'material-opcion';
+
+            opcion.innerHTML =
+                '<strong>' + trabajador.nombre + '</strong>' +
+                '<br>' +
+                '<small>' + trabajador.area + '</small>';
+
+
+            opcion.addEventListener(
+                'mousedown',
+                function (e) {
+
+                    e.preventDefault();
+
+                    seleccionarTrabajador(trabajador);
+
+                }
+            );
+
+
+            opcionesTrabajador.appendChild(opcion);
+
+        });
+
+
+        opcionesTrabajador.hidden = false;
+
+    }
+
+
+    function seleccionarTrabajador(trabajador) {
+
+        buscarTrabajador.value = trabajador.nombre;
+
+        trabajadorId.value = trabajador.id;
+
+        area.value = trabajador.area;
+
+        opcionesTrabajador.hidden = true;
+
+    }
+
+
+    buscarTrabajador.addEventListener(
+        'input',
+        function () {
+
+            // Si modifica el nombre después de seleccionarlo,
+            // se elimina la selección anterior.
+            trabajadorId.value = '';
+
+            area.value = '';
+
+            buscarTrabajadores(
+                buscarTrabajador.value
+            );
+
+        }
+    );
+
+
+    buscarTrabajador.addEventListener(
+        'focus',
+        function () {
+
+            if (
+                buscarTrabajador.value.trim() !== ''
+            ) {
+
+                buscarTrabajadores(
+                    buscarTrabajador.value
+                );
+
+            }
+
+        }
+    );
+
+
+    document.addEventListener(
+        'click',
+        function (e) {
+
+            if (
+                e.target !== buscarTrabajador &&
+                !opcionesTrabajador.contains(e.target)
+            ) {
+
+                opcionesTrabajador.hidden = true;
+
+            }
+
+        }
+    );
+
+})();
 
   (function () {
     var buscar = document.getElementById('material-buscar');

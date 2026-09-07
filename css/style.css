@@ -300,3 +300,223 @@ section.block { margin-bottom: 30px; }
   .req-row { grid-template-columns: 1fr; }
   .req-actions { justify-content: flex-start; }
 }
+/* ==========================================
+   CATÁLOGO DE MATERIALES POR CATEGORÍA
+   ========================================== */
+
+.catalog-category-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  margin: 22px 0 10px;
+
+  font-family: "Poppins", "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+
+  color: var(--accent-strong);
+}
+
+
+/* Primera categoría más cerca del título */
+
+.side-panel > p + .catalog-category-title {
+  margin-top: 16px;
+}
+
+
+/* Punto de color */
+
+.catalog-category-dot {
+  width: 8px;
+  height: 8px;
+
+  border-radius: 2px;
+
+  background: var(--accent);
+
+  flex: none;
+}
+
+
+/* Número de materiales */
+
+.catalog-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 22px;
+  height: 22px;
+
+  padding: 0 7px;
+
+  border-radius: 999px;
+
+  background: var(--surface-2);
+
+  color: var(--ink-muted);
+
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.7rem;
+
+  margin-left: auto;
+}
+
+
+/* ==========================================
+   CONTENEDOR CON BARRA DESLIZABLE
+   ========================================== */
+
+.catalog-scroll {
+  max-height: 310px;
+
+  overflow-y: auto;
+
+  border: 1px solid var(--border);
+
+  border-radius: 10px;
+
+  background: var(--bg);
+
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+
+/* Barra deslizable para Chrome y Edge */
+
+.catalog-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+
+.catalog-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+
+.catalog-scroll::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 10px;
+}
+
+
+.catalog-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-muted);
+}
+
+
+/* ==========================================
+   MATERIAL DENTRO DEL CATÁLOGO
+   ========================================== */
+
+.catalog-scroll .recent-item {
+  margin: 0;
+
+  padding: 12px;
+
+  background: transparent;
+
+  border-top: 1px solid var(--border);
+}
+
+
+.catalog-scroll .recent-item:first-child {
+  border-top: none;
+}
+
+
+/* Material que está siendo editado */
+
+.catalog-scroll .mat-row-active {
+  background: var(--accent-soft);
+}
+
+
+/* Información del material */
+
+.material-info {
+  min-width: 0;
+}
+
+
+.catalog-scroll .rmat {
+  font-size: 0.86rem;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+.catalog-scroll .rmeta {
+  margin-top: 3px;
+
+  font-size: 0.75rem;
+
+  color: var(--ink-muted);
+}
+
+
+/* ==========================================
+   ACCIONES
+   ========================================== */
+
+.catalog-scroll .mat-row-actions {
+  margin-top: 2px;
+}
+
+
+.catalog-scroll .restock-form {
+  flex-wrap: wrap;
+}
+
+
+/* ==========================================
+   RESPONSIVE
+   ========================================== */
+
+@media (max-width: 760px) {
+
+  .catalog-scroll {
+    max-height: 280px;
+  }
+
+}
+
+.catalog-search-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.catalog-search-input input {
+  flex: 1;
+  min-width: 0;
+}
+
+.clear-search {
+  display: none;
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 auto;
+
+  width: 38px;
+  height: 38px;
+
+  padding: 0;
+  margin: 0;
+
+  border-radius: 8px;
+
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+}

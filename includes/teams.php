@@ -41,7 +41,7 @@ function notificar_teams(
     string $urgencia,
     string $nota
 ): void {
-    $texto = "🔔 **Nueva solicitud pendiente de revisión**\n\n";
+    $texto = "**Nueva solicitud pendiente de revisión**\n\n";
     $texto .= "**{$nombre}** de {$area} solicitó **{$cantidad} {$materialNombre}**.";
     $texto .= "\n\n**Folio:** {$folio}";
     $texto .= "\n**Urgencia:** " . strtoupper($urgencia);

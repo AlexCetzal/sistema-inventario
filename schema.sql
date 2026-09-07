@@ -4,6 +4,7 @@
 -- init_db.php automáticamente si todavía no existe)
 
 DROP TABLE IF EXISTS solicitudes;
+DROP TABLE IF EXISTS trabajadores;
 DROP TABLE IF EXISTS materiales;
 
 CREATE TABLE materiales (
@@ -15,6 +16,14 @@ CREATE TABLE materiales (
     stock       INT NOT NULL DEFAULT 0,
     stock_min   INT NOT NULL DEFAULT 0,
     stock_max   INT NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE trabajadores (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(150) NOT NULL,
+    area VARCHAR(100) NOT NULL,
+    puesto VARCHAR(100) NOT NULL,
+    status ENUM('activo', 'inactivo') NOT NULL DEFAULT 'activo'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE solicitudes (
@@ -33,3 +42,4 @@ CREATE TABLE solicitudes (
 
 CREATE INDEX idx_solicitudes_status ON solicitudes(status);
 CREATE INDEX idx_solicitudes_nombre ON solicitudes(nombre);
+CREATE INDEX idx_trabajadores_status ON trabajadores(status);

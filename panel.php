@@ -90,19 +90,46 @@ require __DIR__ . '/includes/header.php';
 
 <section class="block">
   <div class="block-head">
-    <h2>Inventario</h2>
-    <div class="block-head-right">
-      <span class="count">Existencias actuales por categoría</span>
-      <a href="materiales.php" class="btn btn-ghost btn-sm">Agregar / editar materiales</a>
-    </div>
+  <h2>Inventario</h2>
+
+  <div class="block-head-right">
+    <span class="count">Existencias actuales por categoría</span>
+
+    <a href="materiales.php" class="btn btn-ghost btn-sm">
+      Agregar / editar materiales
+    </a>
   </div>
+</div>
+
+<div class="inventory-filters">
+  <div class="search-box">
+    <label for="buscarMaterial">Buscar material</label>
+    <input
+    class="btn btn-ghost btn-sm"
+      type="text"
+      id="buscarMaterial"
+      placeholder="Escribe el nombre del material..."
+      autocomplete="off"
+    >
+  </div>
+
+  <div class="filter-box">
+    <label for="filtroEstado" >Estado del stock</label>
+    <select id="filtroEstado" class="btn btn-ghost btn-sm">
+      <option value="all">Todos</option>
+      <option value="good">Suficiente</option>
+      <option value="warn">Bajo</option>
+      <option value="critical">Agotado</option>
+    </select>
+  </div>
+</div>
 
   <?php foreach ($inventarioPorCategoria as $categoria => $items): ?>
     <?php if ($items): ?>
       <h3 class="cat-heading"><span class="dot"></span><?= e($nombresCategoria[$categoria] ?? $categoria) ?></h3>
       <div class="inv-grid inv-scroll">
         <?php foreach ($items as $m): ?>
-          <div class="card inv-card">
+          <div class="card inv-card" data-nombre="<?= e(strtolower($m['nombre'])) ?>" data-estado="<?= e($m['estado']) ?>">
             <div class="top-row">
               <a class="name" href="materiales.php?id=<?= (int)$m['id'] ?>" title="Editar / agregar existencia"><?= e($m['nombre']) ?></a>
               <span class="chip chip-<?= $m['estado'] ?>"><?= $etiquetasEstado[$m['estado']] ?></span>
@@ -187,5 +214,70 @@ require __DIR__ . '/includes/header.php';
     <?php endif; ?>
   </div>
 </section>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
 
+  const buscador = document.getElementById('buscarMaterial');
+  const filtroEstado = document.getElementById('filtroEstado');
+
+  const tarjetas = document.querySelectorAll('.inv-card');
+  const categorias = document.querySelectorAll('.cat-heading');
+
+  function filtrarInventario() {
+
+    const texto = buscador.value
+      .toLowerCase()
+      .trim();
+
+    const estadoSeleccionado = filtroEstado.value;
+
+    tarjetas.forEach(function (tarjeta) {
+
+      const nombre = tarjeta.dataset.nombre;
+      const estado = tarjeta.dataset.estado;
+
+      const coincideNombre =
+        nombre.includes(texto);
+
+      const coincideEstado =
+        estadoSeleccionado === 'all' ||
+        estado === estadoSeleccionado;
+
+      if (coincideNombre && coincideEstado) {
+        tarjeta.style.display = '';
+      } else {
+        tarjeta.style.display = 'none';
+      }
+    });
+
+    // Ocultar categorías que no tengan resultados
+    document.querySelectorAll('.inv-grid').forEach(function (grid) {
+
+      const visibles = grid.querySelectorAll(
+        '.inv-card:not([style*="display: none"])'
+      );
+
+      const heading = grid.previousElementSibling;
+
+      if (visibles.length === 0) {
+        grid.style.display = 'none';
+
+        if (heading && heading.classList.contains('cat-heading')) {
+          heading.style.display = 'none';
+        }
+      } else {
+        grid.style.display = '';
+
+        if (heading && heading.classList.contains('cat-heading')) {
+          heading.style.display = '';
+        }
+      }
+    });
+  }
+
+  buscador.addEventListener('input', filtrarInventario);
+  filtroEstado.addEventListener('change', filtrarInventario);
+
+});
+</script>
 <?php require __DIR__ . '/includes/footer.php'; ?>

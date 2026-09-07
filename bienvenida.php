@@ -24,14 +24,14 @@ function kit_base(): array
 {
     return [
         ['clave' => 'libreta_mc', 'cantidad' => 1, 'nombre_sugerido' => 'Libreta media carta', 'unidad_sugerida' => 'pza'],
-        ['clave' => 'bpf_aaz', 'cantidad' => 1],    // Bolígrafo/pluma punta fina azul
-        ['clave' => 'bpf_an', 'cantidad' => 1],     // Bolígrafo/pluma punta fina negro
-        ['clave' => 'bpf_ar', 'cantidad' => 1],     // Bolígrafo/pluma punta fina rojo
-        ['clave' => 'pitm_nam', 'cantidad' => 1],   // Paquete de post-it
-        ['clave' => 'mtxt_nr', 'cantidad' => 1],    // Marcatexto naranja
-        ['clave' => 'mtxt_vr', 'cantidad' => 1],    // Marcatexto verde
-        ['clave' => 'lap_pmhb2', 'cantidad' => 1],  // Lápiz
-        ['clave' => 'crr_lin', 'cantidad' => 1],    // Corrector
+        ['clave' => 'bpf_aaz', 'cantidad' => 1],    
+        ['clave' => 'bpf_an', 'cantidad' => 1],     
+        ['clave' => 'bpf_ar', 'cantidad' => 1],     
+        ['clave' => 'pitm_nam', 'cantidad' => 1],   
+        ['clave' => 'mtxt_nr', 'cantidad' => 1],    
+        ['clave' => 'mtxt_vr', 'cantidad' => 1],    
+        ['clave' => 'lap_pmhb2', 'cantidad' => 1],  
+        ['clave' => 'crr_lin', 'cantidad' => 1],    
     ];
 }
 
@@ -201,7 +201,10 @@ require __DIR__ . '/includes/header.php';
 
     <div class="field">
       <label for="buscar-otros">Agregar algo más (opcional)</label>
-      <input type="text" id="buscar-otros" placeholder="Buscar en el catálogo de oficina..." autocomplete="off">
+      <input type="text" id="buscar-otros" placeholder="Escribe para buscar un material..." autocomplete="off">
+        <div id="sin-resultados" class="hint" style="display: none; margin-top: 8px;">
+          No se encontraron materiales.
+        </div>
       <div class="kit-list kit-list-scroll" id="lista-otros">
         <?php foreach ($otrosMateriales as $m): ?>
           <div class="kit-row" data-nombre="<?= e(mb_strtolower($m['nombre'], 'UTF-8')) ?>">
@@ -222,19 +225,46 @@ require __DIR__ . '/includes/header.php';
 </div>
 
 <script>
-  (function () {
-    var buscador = document.getElementById('buscar-otros');
-    var lista = document.getElementById('lista-otros');
-    if (!buscador || !lista) return;
+document.addEventListener('DOMContentLoaded', function () {
+
+    const buscador = document.getElementById('buscar-otros');
+    const lista = document.getElementById('lista-otros');
+    const sinResultados = document.getElementById('sin-resultados');
+
+    if (!buscador || !lista) {
+        console.log('No se encontró el buscador o la lista');
+        return;
+    }
+
     buscador.addEventListener('input', function () {
-      var q = buscador.value.trim().toLowerCase();
-      var filas = lista.querySelectorAll('.kit-row');
-      filas.forEach(function (fila) {
-        var nombre = fila.getAttribute('data-nombre') || '';
-        fila.hidden = q !== '' && nombre.indexOf(q) === -1;
-      });
+
+        const texto = buscador.value.trim().toLowerCase();
+        const filas = lista.querySelectorAll('.kit-row');
+
+        let encontrados = 0;
+
+        filas.forEach(function (fila) {
+
+            const nombre = (fila.dataset.nombre || '').toLowerCase();
+
+            if (nombre.includes(texto)) {
+                fila.style.display = '';
+                encontrados++;
+            } else {
+                fila.style.display = 'none';
+            }
+
+        });
+
+        if (texto !== '' && encontrados === 0) {
+            sinResultados.style.display = 'block';
+        } else {
+            sinResultados.style.display = 'none';
+        }
+
     });
-  })();
+
+});
 </script>
 
 <?php require __DIR__ . '/includes/footer.php'; ?>
