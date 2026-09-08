@@ -65,6 +65,7 @@ require __DIR__ . '/includes/header.php';
   <span class="who">Sesión activa: <strong>Encargado de materiales</strong></span>
   <span style="display:flex; gap:10px; flex-wrap:wrap;">
     <a class="btn btn-primary" href="bienvenida.php">🎉 Kit de bienvenida</a>
+     <a class="btn btn-ghost" href="usuario.php">Editar personal</a>
     <a class="btn btn-ghost" href="logout.php">Cerrar sesión</a>
   </span>
 </div>
