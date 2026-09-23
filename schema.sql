@@ -6,6 +6,15 @@
 DROP TABLE IF EXISTS solicitudes;
 DROP TABLE IF EXISTS trabajadores;
 DROP TABLE IF EXISTS materiales;
+DROP TABLE IF EXISTS usuarios;
+
+CREATE TABLE usuarios (
+    id              INT AUTO_INCREMENT PRIMARY KEY,
+    correo          VARCHAR(190) NOT NULL UNIQUE,
+    password_hash   VARCHAR(255) NOT NULL,
+    rol             ENUM('admin', 'empleado') NOT NULL DEFAULT 'empleado',
+    fecha_creacion  DATETIME NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE materiales (
     id          INT AUTO_INCREMENT PRIMARY KEY,
@@ -39,6 +48,7 @@ CREATE TABLE solicitudes (
     fecha_resolucion  DATETIME NULL,
     CONSTRAINT fk_solicitudes_material FOREIGN KEY (material_id) REFERENCES materiales(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 
 CREATE INDEX idx_solicitudes_status ON solicitudes(status);
 CREATE INDEX idx_solicitudes_nombre ON solicitudes(nombre);

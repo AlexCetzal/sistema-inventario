@@ -1,9 +1,9 @@
 <?php
 require_once __DIR__ . '/bootstrap.php';
 
-unset($_SESSION['is_admin']);
+unset($_SESSION['usuario'], $_SESSION['is_admin']);
 session_regenerate_id(true);
-flash_set('ok', 'Cerraste la sesión de administrador.');
+flash_set('ok', 'Cerraste la sesión.');
 
-header('Location: solicitar.php');
+header('Location: login.php');
 exit;

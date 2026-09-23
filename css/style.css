@@ -185,6 +185,8 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
 
 /* ---------- Login (standalone page) ---------- */
 .login-standalone { max-width: 360px; margin: 32px auto 0; padding: 28px; }
+.login-divider { display: flex; align-items: center; gap: 10px; margin: 18px 0; color: var(--ink-muted); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; }
+.login-divider::before, .login-divider::after { content: ""; flex: 1; height: 1px; background: var(--border); }
 
 /* ---------- Side panel (recientes) ---------- */
 .side-panel { padding: 20px; }

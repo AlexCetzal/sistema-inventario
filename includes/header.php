@@ -29,13 +29,21 @@ $activePage = $activePage ?? '';
         </div>
       </div>
       <nav class="tabs" role="tablist">
-        <a href="solicitar.php" class="<?= $activePage === 'solicitar' ? 'active' : '' ?>">Solicitar material</a>
+        <?php if (!empty($_SESSION['usuario'])): ?>
+          <a href="solicitar.php" class="<?= $activePage === 'solicitar' ? 'active' : '' ?>">Solicitar material</a>
+        <?php endif; ?>
         <?php if (!empty($_SESSION['is_admin'])): ?>
           <a href="panel.php" class="<?= $activePage === 'panel' ? 'active' : '' ?>">Panel del encargado</a>
+        <?php endif; ?>
+        <?php if (!empty($_SESSION['usuario'])): ?>
+          <a href="logout.php">
+            <svg class="lock-ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
+            Cerrar sesión
+          </a>
         <?php else: ?>
           <a href="login.php" class="<?= $activePage === 'login' ? 'active' : '' ?>">
             <svg class="lock-ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
-            Acceso administrador
+            Iniciar sesión
           </a>
         <?php endif; ?>
       </nav>

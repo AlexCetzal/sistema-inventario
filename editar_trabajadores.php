@@ -9,14 +9,14 @@ $pdo = get_db();
  * Obtener ID
  */
 $id = filter_input(
-    INPUT_GET,
-    'id',
-    FILTER_VALIDATE_INT
+  INPUT_GET,
+  'id',
+  FILTER_VALIDATE_INT
 );
 
 if (!$id) {
-    header('Location: usuarios.php');
-    exit;
+  header('Location: usuario.php');
+  exit;
 }
 
 
@@ -24,7 +24,7 @@ if (!$id) {
  * Buscar trabajador
  */
 $stmt = $pdo->prepare(
-    "SELECT id, nombre, area, puesto, status
+  "SELECT id, nombre, area, puesto, status
      FROM trabajadores
      WHERE id = ?"
 );
@@ -36,9 +36,9 @@ $trabajador = $stmt->fetch();
 
 if (!$trabajador) {
 
-    http_response_code(404);
+  http_response_code(404);
 
-    exit('Trabajador no encontrado.');
+  exit('Trabajador no encontrado.');
 }
 
 
@@ -50,73 +50,74 @@ $errores = [];
  */
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    $nombre = trim($_POST['nombre'] ?? '');
-    $area = trim($_POST['area'] ?? '');
-    $puesto = trim($_POST['puesto'] ?? '');
-    $status = $_POST['status'] ?? 'activo';
+  $nombre = trim($_POST['nombre'] ?? '');
+  $area = trim($_POST['area'] ?? '');
+  $puesto = trim($_POST['puesto'] ?? '');
+  $status = $_POST['status'] ?? 'activo';
 
 
-    /*
+  /*
      * Validaciones
      */
 
-    if ($nombre === '') {
-        $errores[] = 'El nombre es obligatorio.';
-    }
+  if ($nombre === '') {
+    $errores[] = 'El nombre es obligatorio.';
+  }
 
-    if ($area === '') {
-        $errores[] = 'El área es obligatoria.';
-    }
+  if ($area === '') {
+    $errores[] = 'El área es obligatoria.';
+  }
 
-    if ($puesto === '') {
-        $errores[] = 'El puesto es obligatorio.';
-    }
+  if ($puesto === '') {
+    $errores[] = 'El puesto es obligatorio.';
+  }
 
-    if (!in_array($status, ['activo', 'inactivo'], true)) {
-        $errores[] = 'El estado seleccionado no es válido.';
-    }
+  if (!in_array($status, ['activo', 'inactivo'], true)) {
+    $errores[] = 'El estado seleccionado no es válido.';
+  }
 
 
-    /*
+  /*
      * Actualizar
      */
-    if (!$errores) {
+  if (!$errores) {
 
-        $stmt = $pdo->prepare(
-            "UPDATE trabajadores
+    $stmt = $pdo->prepare(
+      "UPDATE trabajadores
              SET nombre = ?,
                  area = ?,
                  puesto = ?,
                  status = ?
              WHERE id = ?"
-        );
+    );
 
-        $stmt->execute([
-            $nombre,
-            $area,
-            $puesto,
-            $status,
-            $id
-        ]);
-
-
-        header(
-            'Location: usuarios.php?actualizado=1'
-        );
-
-        exit;
-    }
+    $stmt->execute([
+      $nombre,
+      $area,
+      $puesto,
+      $status,
+      $id
+    ]);
 
 
-    /*
+    flash_set('ok', 'Cambios guardados.');
+    header(
+      'Location: usuario.php'
+    );
+
+    exit;
+  }
+
+
+  /*
      * Mantener valores introducidos
      * si hubo algún error
      */
 
-    $trabajador['nombre'] = $nombre;
-    $trabajador['area'] = $area;
-    $trabajador['puesto'] = $puesto;
-    $trabajador['status'] = $status;
+  $trabajador['nombre'] = $nombre;
+  $trabajador['area'] = $area;
+  $trabajador['puesto'] = $puesto;
+  $trabajador['status'] = $status;
 }
 
 
@@ -137,15 +138,13 @@ require __DIR__ . '/includes/header.php';
 
     <a
       class="btn btn-ghost"
-      href="usuario.php"
-    >
+      href="usuario.php">
       ← Personal
     </a>
 
     <a
       class="btn btn-ghost"
-      href="logout.php"
-    >
+      href="logout.php">
       Cerrar sesión
     </a>
 
@@ -218,8 +217,7 @@ require __DIR__ . '/includes/header.php';
 
       <form
         method="post"
-        action="editar_trabajador.php?id=<?= (int)$trabajador['id'] ?>"
-      >
+        action="editar_trabajadores.php?id=<?= (int)$trabajador['id'] ?>">
 
 
         <!-- NOMBRE -->
@@ -237,8 +235,7 @@ require __DIR__ . '/includes/header.php';
             value="<?= e($trabajador['nombre']) ?>"
             maxlength="150"
             autocomplete="off"
-            required
-          >
+            required>
 
         </div>
 
@@ -258,8 +255,7 @@ require __DIR__ . '/includes/header.php';
             value="<?= e($trabajador['area']) ?>"
             maxlength="100"
             autocomplete="off"
-            required
-          >
+            required>
 
         </div>
 
@@ -279,8 +275,7 @@ require __DIR__ . '/includes/header.php';
             value="<?= e($trabajador['puesto']) ?>"
             maxlength="100"
             autocomplete="off"
-            required
-          >
+            required>
 
         </div>
 
@@ -296,15 +291,13 @@ require __DIR__ . '/includes/header.php';
           <select
             id="status"
             name="status"
-            required
-          >
+            required>
 
             <option
               value="activo"
               <?= $trabajador['status'] === 'activo'
                 ? 'selected'
-                : '' ?>
-            >
+                : '' ?>>
               Activo
             </option>
 
@@ -312,8 +305,7 @@ require __DIR__ . '/includes/header.php';
               value="inactivo"
               <?= $trabajador['status'] === 'inactivo'
                 ? 'selected'
-                : '' ?>
-            >
+                : '' ?>>
               Inactivo
             </option>
 
@@ -325,16 +317,14 @@ require __DIR__ . '/includes/header.php';
         <div class="submit-row">
 
           <a
-            href="usuarios.php"
-            class="btn btn-ghost"
-          >
+            href="usuario.php"
+            class="btn btn-ghost">
             Cancelar
           </a>
 
           <button
             type="submit"
-            class="btn btn-primary"
-          >
+            class="btn btn-primary">
             Guardar cambios
           </button>
 
@@ -420,72 +410,70 @@ require __DIR__ . '/includes/header.php';
 
 
 <style>
-
-/* ==========================================
+  /* ==========================================
    RESUMEN DEL TRABAJADOR
    ========================================== */
 
-.personal-summary {
-  position: sticky;
-  top: 20px;
-}
-
-.personal-summary-icon {
-  width: 46px;
-  height: 46px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 12px;
-  border-radius: 12px;
-  background: var(--accent-soft);
-  color: var(--accent-strong);
-  font-family: "Poppins", sans-serif;
-  font-size: 1.15rem;
-  font-weight: 700;
-}
-
-.personal-summary h3 {
-  font-size: 0.98rem;
-  line-height: 1.3;
-  margin-bottom: 3px;
-}
-
-.personal-summary > p {
-  margin: 0 0 16px;
-}
-
-.personal-detail {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 11px 0;
-  border-top: 1px solid var(--border);
-}
-
-.personal-detail span:first-child {
-  color: var(--ink-muted);
-  font-size: 0.7rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.personal-detail strong {
-  font-size: 0.83rem;
-}
-
-
-/* ---------- Responsive ---------- */
-
-@media (max-width: 760px) {
-
   .personal-summary {
-    position: static;
+    position: sticky;
+    top: 20px;
   }
 
-}
+  .personal-summary-icon {
+    width: 46px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+    border-radius: 12px;
+    background: var(--accent-soft);
+    color: var(--accent-strong);
+    font-family: "Poppins", sans-serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+  }
 
+  .personal-summary h3 {
+    font-size: 0.98rem;
+    line-height: 1.3;
+    margin-bottom: 3px;
+  }
+
+  .personal-summary>p {
+    margin: 0 0 16px;
+  }
+
+  .personal-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 11px 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .personal-detail span:first-child {
+    color: var(--ink-muted);
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .personal-detail strong {
+    font-size: 0.83rem;
+  }
+
+
+  /* ---------- Responsive ---------- */
+
+  @media (max-width: 760px) {
+
+    .personal-summary {
+      position: static;
+    }
+
+  }
 </style>
 
 

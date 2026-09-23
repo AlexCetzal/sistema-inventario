@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/bootstrap.php';
+require_login();
 
 $pdo = get_db();
 $materiales = $pdo->query(
