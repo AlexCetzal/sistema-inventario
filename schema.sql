@@ -4,6 +4,7 @@
 -- init_db.php automáticamente si todavía no existe)
 
 DROP TABLE IF EXISTS solicitudes;
+DROP TABLE IF EXISTS kit_bienvenida;
 DROP TABLE IF EXISTS trabajadores;
 DROP TABLE IF EXISTS materiales;
 DROP TABLE IF EXISTS usuarios;
@@ -47,6 +48,12 @@ CREATE TABLE solicitudes (
     status            ENUM('pendiente', 'aprobada', 'rechazada') NOT NULL DEFAULT 'pendiente',
     fecha_resolucion  DATETIME NULL,
     CONSTRAINT fk_solicitudes_material FOREIGN KEY (material_id) REFERENCES materiales(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE kit_bienvenida (
+    material_id INT NOT NULL PRIMARY KEY,
+    cantidad    INT NOT NULL DEFAULT 1,
+    CONSTRAINT fk_kit_bienvenida_material FOREIGN KEY (material_id) REFERENCES materiales(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
